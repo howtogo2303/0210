@@ -1,8 +1,6 @@
 name: zzz11
 
 on: [push, workflow_dispatch]
-
-jobs:
 jobs:
   build:
     runs-on: windows-latest
