@@ -24,11 +24,15 @@ jobs:
       run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
     - name: Enable Firewall for NoMachine
-      run: Enable-NetFirewallRule -DisplayName "NoMachine"
+      run: 
+           New-NetFirewallRule -DisplayName "NoMachine" -Direction Inbound -Protocol TCP -LocalPort 4000 -Action Allow
+
+           Enable-NetFirewallRule -DisplayName "NoMachine"
 
     - name: Set local user password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "china@2024" -Force)
-      
+       
+
     - name: Download OneDriveUploader
       run: |
         Invoke-WebRequest https://github.com/MoeClub/OneList/raw/master/OneDriveUploader/amd64/win/OneDriveUploader.exe -OutFile OneDriveUploader.exe
