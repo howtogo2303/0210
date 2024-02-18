@@ -44,7 +44,7 @@ jobs:
       run: |
         
           # Enable NoMachine service
-           "C:\Program Files (x86)\NoMachine\bin\nxplayer.exe"
+           "C:\Program Files\NoMachine\bin\nxplayer.exe"
 
     
     - name: Download OneDriveUploader
