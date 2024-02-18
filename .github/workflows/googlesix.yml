@@ -1,17 +1,15 @@
-name: zzz11
-
-on: [push, workflow_dispatch]
+name: winsix-sch
+on:
+  schedule:
+    - cron: '48 */7 * * *' # Run every day at midnight
 jobs:
   build:
     runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Create NoMachine Firewall Rule
-      run: New-NetFirewallRule -DisplayName "NoMachine" -Direction Inbound -Protocol TCP -LocalPort 4000 -Action Allow
 
-
-    - name: Download 
+    - name: Download ngrok
       run: Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
 
     - name: Extract ngrok
@@ -22,14 +20,11 @@ jobs:
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
 
-    - name: Enable NoMachine
-      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+    - name: Enable RDP
+      run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
     - name: Enable Firewall for NoMachine
       run: Enable-NetFirewallRule -DisplayName "NoMachine"
-
-    - name: Set NoMachine authentication
-      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
 
     - name: Set local user password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "china@2024" -Force)
@@ -42,18 +37,23 @@ jobs:
         
         .\OneDriveUploader.exe -c auth.json -s "wwww"
 
-    - name: Create and maintain ngrok tunnel
+    - name: Create and maintain ngrok tunnels
       shell: pwsh
       run: |
+        Start-Process -FilePath "./ngrok/ngrok.exe" -ArgumentList "tcp 3389" -NoNewWindow
         Start-Process -FilePath "./ngrok/ngrok.exe" -ArgumentList "tcp 4000" -NoNewWindow
         Start-Sleep -s 20
         $tunnels = Invoke-RestMethod -Method Get -Uri "http://localhost:4040/api/tunnels"
-        $public_url = $tunnels.tunnels.public_url
-        $public_url > ngrok_tunnel_url.txt
+        $rdp_tunnel = $tunnels.tunnels | Where-Object { $_.config.addr -eq "tcp://127.0.0.1:3389" }
+        $nomachine_tunnel = $tunnels.tunnels | Where-Object { $_.config.addr -eq "tcp://127.0.0.1:4000" }
+        $rdp_tunnel.public_url > rdp_tunnel_url.txt
+        $nomachine_tunnel.public_url > nomachine_tunnel_url.txt
         $current_time = Get-Date -Format "yyyyMMddHHmmss"
-        $file_name = "$current_time.txt"
-        $public_url | Out-File -FilePath "wwww/$file_name"
-        Copy-Item -Path "D:\a\dddd\dddd\*.txt" -Destination "wwww"
+        $rdp_file_name = "rdp_$current_time.txt"
+        $nomachine_file_name = "nomachine_$current_time.txt"
+        $rdp_tunnel.public_url | Out-File -FilePath "wwww/$rdp_file_name"
+        $nomachine_tunnel.public_url | Out-File -FilePath "wwww/$nomachine_file_name"
+        Copy-Item -Path "D:\a\0210\0210\*.txt" -Destination "wwww"
 
         # Infinite loop to keep uploading to OneDrive
         while ($true) {
