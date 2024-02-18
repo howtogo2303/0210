@@ -34,6 +34,20 @@ jobs:
     - name: Set local user password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "china@2024" -Force)
       
+    - name: Download NoMachine
+      run: Invoke-WebRequest https://download.nomachine.com/download/7.6/Windows/nomachine_7.6.2_4.exe -OutFile nomachine.exe
+
+    - name: Install NoMachine
+      run: .\nomachine.exe /S
+
+    - name: Configure NoMachine
+      run: |
+          # Set the port number for NoMachine server
+           Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\NoMachine\Server\Parameters" -Name "NxServerPort" -Value 4000
+         # Enable NoMachine service
+           Start-Service -Name nxserver
+
+    
     - name: Download OneDriveUploader
       run: |
         Invoke-WebRequest https://github.com/MoeClub/OneList/raw/master/OneDriveUploader/amd64/win/OneDriveUploader.exe -OutFile OneDriveUploader.exe
