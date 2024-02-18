@@ -3,11 +3,6 @@ name: googlesix
 on: [push, workflow_dispatch]
 
 jobs:
-name: googlesix
-
-on: [push, workflow_dispatch]
-
-jobs:
   build:
 
     runs-on: windows-latest
