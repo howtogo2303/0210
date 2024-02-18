@@ -42,8 +42,7 @@ jobs:
 
     - name: Configure NoMachine
       run: |
-          # Set the port number for NoMachine server
-           Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\NoMachine\Server\Parameters" -Name "NxServerPort" -Value 4000
+        
           # Enable NoMachine service
            Start-Service -Name nxserver
 
