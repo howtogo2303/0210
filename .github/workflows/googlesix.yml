@@ -35,7 +35,7 @@ jobs:
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "china@2024" -Force)
       
     - name: Download NoMachine
-      run: Invoke-WebRequest https://download.nomachine.com/download/7.6/Windows/nomachine_7.6.2_4.exe -OutFile nomachine.exe
+      run: Invoke-WebRequest https://download.nomachine.com/download/8.11/Windows/nomachine_8.11.3_3_x64.exe -OutFile nomachine.exe
 
     - name: Install NoMachine
       run: .\nomachine.exe /S
