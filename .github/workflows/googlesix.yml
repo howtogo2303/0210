@@ -1,7 +1,7 @@
-name: winsix-sch
-on:
-  schedule:
-    - cron: '48 */7 * * *' # Run every day at midnight
+name: zzz222
+
+on: [push, workflow_dispatch]
+
 jobs:
   build:
     runs-on: windows-latest
